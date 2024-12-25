@@ -13,29 +13,42 @@ class curve:
         self.slider.pack(side=tk.BOTTOM, fill=tk.X)
         
         self.curvature = 0
+        self.spacing = 50
         self.draw_curve()
     
     def draw_curve(self):
         self.canvas.delete("all")
         
-        start_x, start_y = 100, 250
-        end_x, end_y = 400, 250
+        start_x1, start_y = 200, 100
+        start_x2 = start_x1 + self.spacing
+        end_x1, end_y = 200, 400
+        end_x2 = end_x1 + self.spacing
         
-        control_x = (start_x + end_x) / 2
-        control_y = 250 + self.curvature
-        
-        # bezier curve, maybe change to exponential
+        control_x1 = start_x1 + self.curvature
+        control_x2 = start_x2 + self.curvature
+        control_y = (start_y + end_y) / 2
+
         steps = 100
-        points = []
+        points1 = []
+        points2 = []
+        
         for t in range(steps + 1):
             t /= steps
-            x = (1 - t)**2 * start_x + 2 * (1 - t) * t * control_x + t**2 * end_x
-            y = (1 - t)**2 * start_y + 2 * (1 - t) * t * control_y + t**2 * end_y
-            points.append((x, y))
+            x1 = (1 - t)**2 * start_x1 + 2 * (1 - t) * t * control_x1 + t**2 * end_x1
+            y1 = (1 - t)**2 * start_y + 2 * (1 - t) * t * control_y + t**2 * end_y
+            x2 = (1 - t)**2 * start_x2 + 2 * (1 - t) * t * control_x2 + t**2 * end_x2
+            y2 = (1 - t)**2 * start_y + 2 * (1 - t) * t * control_y + t**2 * end_y
+            points1.append((x1, y1))
+            points2.append((x2, y2))
         
-        for i in range(len(points) - 1):
-            x1, y1 = points[i]
-            x2, y2 = points[i + 1]
+        for i in range(len(points1) - 1):
+            x1, y1 = points1[i]
+            x2, y2 = points1[i + 1]
+            self.canvas.create_line(x1, y1, x2, y2, fill="blue", width=2)
+        
+        for i in range(len(points2) - 1):
+            x1, y1 = points2[i]
+            x2, y2 = points2[i + 1]
             self.canvas.create_line(x1, y1, x2, y2, fill="blue", width=2)
     
     def update_curve(self, value):
