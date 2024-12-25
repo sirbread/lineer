@@ -41,15 +41,24 @@ class curve:
             points1.append((x1, y1))
             points2.append((x2, y2))
         
+        color = self.get_color(abs(self.curvature))
+        
         for i in range(len(points1) - 1):
             x1, y1 = points1[i]
             x2, y2 = points1[i + 1]
-            self.canvas.create_line(x1, y1, x2, y2, fill="blue", width=2)
+            self.canvas.create_line(x1, y1, x2, y2, fill=color, width=6)
         
         for i in range(len(points2) - 1):
             x1, y1 = points2[i]
             x2, y2 = points2[i + 1]
-            self.canvas.create_line(x1, y1, x2, y2, fill="blue", width=2)
+            self.canvas.create_line(x1, y1, x2, y2, fill=color, width=6)
+    
+    def get_color(self, curvature):
+        max_curve = 200
+        ratio = curvature / max_curve
+        red = int(255 * ratio)
+        green = int(255 * (1 - ratio))
+        return f"#{red:02x}{green:02x}00"
     
     def update_curve(self, value):
         self.curvature = int(value)
