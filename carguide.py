@@ -1,5 +1,4 @@
 import tkinter as tk
-from math import sin, cos, radians
 
 class curve:
     def __init__(self, root):
@@ -10,17 +9,10 @@ class curve:
         self.canvas = tk.Canvas(root, bg="white")
         self.canvas.pack(fill=tk.BOTH, expand=True)
         
-        self.curvature = 0 
+        self.slider = tk.Scale(root, from_=-200, to=200, orient=tk.HORIZONTAL, command=self.update_curve)
+        self.slider.pack(side=tk.BOTTOM, fill=tk.X)
         
-        button_frame = tk.Frame(root)
-        button_frame.pack(side=tk.BOTTOM, fill=tk.X)
-        
-        left_button = tk.Button(button_frame, text="up", command=self.curve_up)
-        left_button.pack(side=tk.LEFT, expand=True, fill=tk.X)
-        
-        right_button = tk.Button(button_frame, text="down", command=self.curve_down)
-        right_button.pack(side=tk.RIGHT, expand=True, fill=tk.X)
-        
+        self.curvature = 0
         self.draw_curve()
     
     def draw_curve(self):
@@ -46,20 +38,11 @@ class curve:
             x2, y2 = points[i + 1]
             self.canvas.create_line(x1, y1, x2, y2, fill="blue", width=2)
     
-    def curve_up(self):
-        self.curvature -= 20
-        self.draw_curve()
-    
-    def curve_down(self):
-        self.curvature += 20
+    def update_curve(self, value):
+        self.curvature = int(value)
         self.draw_curve()
 
 if __name__ == "__main__":
     root = tk.Tk()
     app = curve(root)
     root.mainloop()
-
-
-#so like will this comment show up if i push another time
-#how about anotehr time
-#i didn't sync it this time, if i push like 2 commits lemme see if it syncs
