@@ -58,3 +58,6 @@ if __name__ == "__main__":
     root = tk.Tk()
     app = curve(root)
     root.mainloop()
+
+
+#so like will this comment show up if i push another time
