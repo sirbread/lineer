@@ -32,7 +32,8 @@ class CurveApp:
         
         for t in range(steps + 1):
             y = start_y + t * (end_y - start_y) / steps
-            offset = (math.exp(abs(self.bend_factor) * (1 - (y - start_y) / (end_y - start_y))) - 1)
+            # Apply a stronger curve with higher power of bend_factor
+            offset = (math.exp(abs(self.bend_factor) * (1 - (y - start_y) / (end_y - start_y))) - 1) ** 2
             offset *= 1 if self.bend_factor >= 0 else -1
             
             x1 = start_x + offset * spacing - tilt_factor * (1 - t / steps)
