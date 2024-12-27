@@ -7,7 +7,7 @@ class CurveApp:
         self.root.title("exponential")
         self.root.geometry("1400x500")
         
-        self.canvas = tk.Canvas(root, bg="black")
+        self.canvas = tk.Canvas(root, bg="white")
         self.canvas.pack(fill=tk.BOTH, expand=True)
         
         self.slider = tk.Scale(root, from_=-2, to=2, resolution=0.01, orient=tk.HORIZONTAL, command=self.update_curve)
@@ -20,22 +20,23 @@ class CurveApp:
         self.canvas.delete("all")
         
         canvas_width = self.canvas.winfo_width()
-        start_x = canvas_width / 2 - 75
-        spacing = 150
+        start_x = canvas_width / 2 - 150
+        spacing = 300
+        tilt_factor = -100
         
         start_y, end_y = 100, 400
         
         points1 = []
         points2 = []
-        steps = 200
+        steps = 100
         
         for t in range(steps + 1):
             y = start_y + t * (end_y - start_y) / steps
             offset = (math.exp(abs(self.bend_factor) * (1 - (y - start_y) / (end_y - start_y))) - 1)
             offset *= 1 if self.bend_factor >= 0 else -1
             
-            x1 = start_x + offset * spacing
-            x2 = start_x + spacing + offset * spacing
+            x1 = start_x + offset * spacing - tilt_factor * (1 - t / steps)
+            x2 = start_x + spacing + offset * spacing + tilt_factor * (1 - t / steps)
             points1.append((x1, y))
             points2.append((x2, y))
         
