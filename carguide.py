@@ -22,10 +22,14 @@ class CurveApp:
         self.slider_tiling = tk.Scale(root, from_=0, to=-400, resolution=1, orient=tk.HORIZONTAL, label="Tiling Factor", command=self.update_curve)
         self.slider_tiling.pack(side=tk.RIGHT, fill=tk.Y)
         
+        self.slider_yellow_threshold = tk.Scale(root, from_=0.7, to=1.5, resolution=0.01, orient=tk.HORIZONTAL, label="Yellow Threshold", command=self.update_curve)
+        self.slider_yellow_threshold.pack(side=tk.RIGHT, fill=tk.Y)
+        
         self.bend_factor = 0
         self.curve_strength = 1
-        self.distance_between_lines = 300 
-        self.tiling_factor = -100  
+        self.distance_between_lines = 50 
+        self.tiling_factor = 0  
+        self.yellow_threshold = 1.3
         self.canvas.bind("<Configure>", lambda event: self.draw_curve())
         
     def draw_curve(self):
@@ -67,16 +71,25 @@ class CurveApp:
     
     def get_color(self, bend_factor):
         max_bend = 2
+        yellow_threshold = self.yellow_threshold 
+
         ratio = bend_factor / max_bend
-        red = int(255 * ratio)
-        green = int(255 * (1 - ratio))
+
+        if ratio < (yellow_threshold / max_bend):  
+            green = 255
+            red = int(255 * (ratio * max_bend / yellow_threshold))  
+        else: 
+            red = 255
+            green = int(255 * ((max_bend - ratio * max_bend) / (max_bend - yellow_threshold)))  
+
         return f"#{red:02x}{green:02x}00"
-    
+
     def update_curve(self, value=None):
         self.bend_factor = max(-2, min(2, float(self.slider_bend.get())))
         self.curve_strength = float(self.slider_strength.get())
         self.distance_between_lines = float(self.slider_distance.get())
         self.tiling_factor = float(self.slider_tiling.get())
+        self.yellow_threshold = float(self.slider_yellow_threshold.get())  
         self.draw_curve()
 
 if __name__ == "__main__":
