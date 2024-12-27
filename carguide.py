@@ -4,25 +4,37 @@ import math
 class CurveApp:
     def __init__(self, root):
         self.root = root
-        self.root.title("exponential")
+        self.root.title("Exponential Curves")
         self.root.geometry("1400x500")
         
         self.canvas = tk.Canvas(root, bg="white")
         self.canvas.pack(fill=tk.BOTH, expand=True)
         
-        self.slider = tk.Scale(root, from_=-2, to=2, resolution=0.01, orient=tk.HORIZONTAL, command=self.update_curve)
-        self.slider.pack(side=tk.BOTTOM, fill=tk.X)
+        self.slider_bend = tk.Scale(root, from_=-2, to=2, resolution=0.01, orient=tk.HORIZONTAL, command=self.update_curve)
+        self.slider_bend.pack(side=tk.BOTTOM, fill=tk.X)
+        
+        self.slider_strength = tk.Scale(root, from_=1, to=4, resolution=0.01, orient=tk.HORIZONTAL, label="Curve Strength", command=self.update_curve)
+        self.slider_strength.pack(side=tk.RIGHT, fill=tk.Y)
+        
+        self.slider_distance = tk.Scale(root, from_=50, to=800, resolution=1, orient=tk.HORIZONTAL, label="Distance Between Lines", command=self.update_curve)
+        self.slider_distance.pack(side=tk.RIGHT, fill=tk.Y)
+        
+        self.slider_tiling = tk.Scale(root, from_=0, to=-400, resolution=1, orient=tk.HORIZONTAL, label="Tiling Factor", command=self.update_curve)
+        self.slider_tiling.pack(side=tk.RIGHT, fill=tk.Y)
         
         self.bend_factor = 0
+        self.curve_strength = 1
+        self.distance_between_lines = 300 
+        self.tiling_factor = -100  
         self.canvas.bind("<Configure>", lambda event: self.draw_curve())
         
     def draw_curve(self):
         self.canvas.delete("all")
         
         canvas_width = self.canvas.winfo_width()
-        start_x = canvas_width / 2 - 150
-        spacing = 300
-        tilt_factor = -100
+        start_x = (canvas_width - self.distance_between_lines) / 2  
+        spacing = self.distance_between_lines
+        tilt_factor = self.tiling_factor
         
         start_y, end_y = 100, 400
         
@@ -32,8 +44,8 @@ class CurveApp:
         
         for t in range(steps + 1):
             y = start_y + t * (end_y - start_y) / steps
-            # Apply a stronger curve with higher power of bend_factor
-            offset = (math.exp(abs(self.bend_factor) * (1 - (y - start_y) / (end_y - start_y))) - 1) ** 2
+
+            offset = (math.exp(abs(self.bend_factor) * (1 - (y - start_y) / (end_y - start_y))) - 1) ** self.curve_strength
             offset *= 1 if self.bend_factor >= 0 else -1
             
             x1 = start_x + offset * spacing - tilt_factor * (1 - t / steps)
@@ -60,8 +72,11 @@ class CurveApp:
         green = int(255 * (1 - ratio))
         return f"#{red:02x}{green:02x}00"
     
-    def update_curve(self, value):
-        self.bend_factor = max(-2, min(2, float(value)))
+    def update_curve(self, value=None):
+        self.bend_factor = max(-2, min(2, float(self.slider_bend.get())))
+        self.curve_strength = float(self.slider_strength.get())
+        self.distance_between_lines = float(self.slider_distance.get())
+        self.tiling_factor = float(self.slider_tiling.get())
         self.draw_curve()
 
 if __name__ == "__main__":
