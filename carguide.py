@@ -1,12 +1,9 @@
 import tkinter as tk
 from tkinter.colorchooser import askcolor
 import math
-
-#todo
 #fix ui
-#make background change ui too
-#add steps resulution slider
-#cascade color sliders?
+#cascade color inputs
+
 class CurveApp:
     def __init__(self, root):
         self.root = root
@@ -51,12 +48,24 @@ class CurveApp:
         self.slider_yellow_threshold = tk.Scale(root, from_=0.7, to=1.5, resolution=0.01, orient=tk.HORIZONTAL, label="Middle Color Threshold", command=self.update_curve)
         self.slider_yellow_threshold.pack(side=tk.RIGHT, fill=tk.Y)
 
+        self.slider_scroll_distance = tk.Scale(root, from_=0.01, to=0.2, resolution=0.01, orient=tk.HORIZONTAL, label="Dis. per Scroll", command=self.update_scroll_distance)
+        self.slider_scroll_distance.set(0.1)
+        self.slider_scroll_distance.pack(side=tk.RIGHT, fill=tk.Y)
+
         self.bend_factor = 0
         self.curve_strength = 1
         self.distance_between_lines = 50 
         self.tiling_factor = 0  
         self.yellow_threshold = 1.3
+        self.scroll_step_size = 0.1  
         self.canvas.bind("<Configure>", lambda event: self.draw_curve())
+
+        self.fullscreen_button = tk.Button(root, text="Fullscreen", command=self.toggle_fullscreen)
+        self.fullscreen_button.pack(side=tk.TOP, padx=10, pady=5)
+
+        self.canvas.bind("<MouseWheel>", self.on_scroll)
+
+        self.root.bind("<Escape>", self.toggle_fullscreen_on_escape)
 
     def add_color_input(self, label, default_color, command):
         frame = tk.Frame(self.color_frame)
@@ -86,7 +95,6 @@ class CurveApp:
 
     def set_bg_color(self, color):
         if color:
-            self.bg_color = color
             self.canvas.config(bg=color)
 
     def pick_color(self, command, entry):
@@ -167,6 +175,54 @@ class CurveApp:
         self.tiling_factor = float(self.slider_tiling.get())
         self.yellow_threshold = float(self.slider_yellow_threshold.get())
         self.draw_curve()
+
+    def update_scroll_distance(self, value=None):
+        self.scroll_step_size = float(self.slider_scroll_distance.get())
+
+    def on_scroll(self, event):
+        """Adjust bend factor with the scroll wheel."""
+        delta = event.delta
+        current_value = float(self.slider_bend.get())
+        if delta > 0:
+            new_value = min(2, current_value + self.scroll_step_size)  #scroll up
+        else:
+            new_value = max(-2, current_value - self.scroll_step_size)  #scroll down
+        self.slider_bend.set(new_value)
+        self.update_curve()
+
+    def toggle_fullscreen(self, event=None):
+        """Toggle fullscreen mode by hiding UI elements and expanding canvas"""
+        if self.color_frame.winfo_ismapped():
+            #death to the ui elements!
+            self.color_frame.pack_forget()
+            self.slider_bend.pack_forget()
+            self.slider_strength.pack_forget()
+            self.slider_distance.pack_forget()
+            self.slider_tiling.pack_forget()
+            self.slider_yellow_threshold.pack_forget()
+            self.fullscreen_button.pack_forget()
+            self.slider_scroll_distance.pack_forget()
+
+            self.root.attributes("-fullscreen", True)
+            self.canvas.pack(fill=tk.BOTH, expand=True)
+        else:
+            #reappear
+            self.color_frame.pack(side=tk.TOP, fill=tk.X)
+            self.slider_bend.pack(side=tk.BOTTOM, fill=tk.X)
+            self.slider_strength.pack(side=tk.RIGHT, fill=tk.Y)
+            self.slider_distance.pack(side=tk.RIGHT, fill=tk.Y)
+            self.slider_tiling.pack(side=tk.RIGHT, fill=tk.Y)
+            self.slider_yellow_threshold.pack(side=tk.RIGHT, fill=tk.Y)
+            self.slider_scroll_distance.pack(side=tk.RIGHT, fill=tk.Y)
+            self.fullscreen_button.pack(side=tk.TOP, padx=10, pady=5)
+
+            self.root.attributes("-fullscreen", False)
+            self.canvas.pack(fill=tk.BOTH, expand=True)
+
+    def toggle_fullscreen_on_escape(self, event=None):
+        if self.root.attributes("-fullscreen"):
+            self.toggle_fullscreen()
+
 
 if __name__ == "__main__":
     root = tk.Tk()
