@@ -1,8 +1,6 @@
 import tkinter as tk
 from tkinter.colorchooser import askcolor
 import math
-#fix ui
-#cascade color inputs
 
 class CurveApp:
     def __init__(self, root):
@@ -16,22 +14,6 @@ class CurveApp:
         self.slight_curve_color = "#ffff00"  # yellow
         self.curve_color = "#ff0000"  # red
         self.bg_color = "#ffffff"  # white
-
-        self.color_frame = tk.Frame(root)
-        self.color_frame.pack(side=tk.TOP, fill=tk.X)
-
-        self.straight_color_entry = self.add_color_input(
-            "Straight Color", self.straight_color, lambda color: self.set_color("straight_color", color)
-        )
-        self.slight_curve_color_entry = self.add_color_input(
-            "Slight Curve Color", self.slight_curve_color, lambda color: self.set_color("slight_curve_color", color)
-        )
-        self.curve_color_entry = self.add_color_input(
-            "Curve Color", self.curve_color, lambda color: self.set_color("curve_color", color)
-        )
-        self.bg_color_entry = self.add_color_input(
-            "Background Color", self.bg_color, self.set_bg_color
-        )
 
         self.slider_bend = tk.Scale(root, from_=-2, to=2, resolution=0.01, orient=tk.HORIZONTAL, command=self.update_curve)
         self.slider_bend.pack(side=tk.BOTTOM, fill=tk.X)
@@ -63,18 +45,31 @@ class CurveApp:
         self.fullscreen_button = tk.Button(root, text="Fullscreen", command=self.toggle_fullscreen)
         self.fullscreen_button.pack(side=tk.TOP, padx=10, pady=5)
 
+        self.color_prefs_button = tk.Button(root, text="Color Preferences", command=self.open_color_preferences)
+        self.color_prefs_button.pack(side=tk.TOP, padx=10, pady=5)
+
         self.canvas.bind("<MouseWheel>", self.on_scroll)
 
         self.root.bind("<Escape>", self.toggle_fullscreen_on_escape)
 
-    def add_color_input(self, label, default_color, command):
-        frame = tk.Frame(self.color_frame)
-        frame.pack(side=tk.LEFT, padx=10)
+    def open_color_preferences(self):
+        color_window = tk.Toplevel(self.root)
+        color_window.title("Color Preferences")
+        color_window.geometry("250x150")
 
-        tk.Label(frame, text=label).pack()
+        self.add_color_input(color_window, "Straight Color", self.straight_color, lambda color: self.set_color("straight_color", color))
+        self.add_color_input(color_window, "Slight Curve Color", self.slight_curve_color, lambda color: self.set_color("slight_curve_color", color))
+        self.add_color_input(color_window, "Curve Color", self.curve_color, lambda color: self.set_color("curve_color", color))
+        self.add_color_input(color_window, "Background Color", self.bg_color, self.set_bg_color)
+
+    def add_color_input(self, parent, label, default_color, command):
+        frame = tk.Frame(parent)
+        frame.pack(fill=tk.X, pady=5)
+
+        tk.Label(frame, text=label).pack(side=tk.LEFT, padx=5)
         entry = tk.Entry(frame, width=10)
         entry.insert(0, default_color)
-        entry.pack()
+        entry.pack(side=tk.LEFT, padx=5)
 
         def on_update_color():
             hex_color = entry.get()
@@ -84,9 +79,7 @@ class CurveApp:
                 tk.messagebox.showerror("Invalid Color", "Enter a valid hex color (e.g., #00ff00).")
 
         entry.bind("<Return>", lambda e: on_update_color())
-        tk.Button(frame, text="Select", command=lambda: self.pick_color(command, entry)).pack()
-
-        return entry
+        tk.Button(frame, text="Select", command=lambda: self.pick_color(command, entry)).pack(side=tk.LEFT, padx=5)
 
     def set_color(self, color_attr, color=None):
         if color:
@@ -180,7 +173,6 @@ class CurveApp:
         self.scroll_step_size = float(self.slider_scroll_distance.get())
 
     def on_scroll(self, event):
-        """Adjust bend factor with the scroll wheel."""
         delta = event.delta
         current_value = float(self.slider_bend.get())
         if delta > 0:
@@ -191,31 +183,30 @@ class CurveApp:
         self.update_curve()
 
     def toggle_fullscreen(self, event=None):
-        """Toggle fullscreen mode by hiding UI elements and expanding canvas"""
-        if self.color_frame.winfo_ismapped():
-            #death to the ui elements!
-            self.color_frame.pack_forget()
+        if self.fullscreen_button.winfo_ismapped():
+            self.fullscreen_button.pack_forget()
+            self.color_prefs_button.pack_forget()
             self.slider_bend.pack_forget()
             self.slider_strength.pack_forget()
             self.slider_distance.pack_forget()
             self.slider_tiling.pack_forget()
             self.slider_yellow_threshold.pack_forget()
-            self.fullscreen_button.pack_forget()
             self.slider_scroll_distance.pack_forget()
 
             self.root.attributes("-fullscreen", True)
             self.canvas.pack(fill=tk.BOTH, expand=True)
         else:
-            #reappear
-            self.color_frame.pack(side=tk.TOP, fill=tk.X)
+
             self.slider_bend.pack(side=tk.BOTTOM, fill=tk.X)
             self.slider_strength.pack(side=tk.RIGHT, fill=tk.Y)
             self.slider_distance.pack(side=tk.RIGHT, fill=tk.Y)
             self.slider_tiling.pack(side=tk.RIGHT, fill=tk.Y)
             self.slider_yellow_threshold.pack(side=tk.RIGHT, fill=tk.Y)
             self.slider_scroll_distance.pack(side=tk.RIGHT, fill=tk.Y)
+            self.fullscreen_button = tk.Button(root, text="Fullscreen", command=self.toggle_fullscreen)
             self.fullscreen_button.pack(side=tk.TOP, padx=10, pady=5)
-
+            self.color_prefs_button = tk.Button(root, text="Color Preferences", command=self.open_color_preferences)
+            self.color_prefs_button.pack(side=tk.TOP, padx=10, pady=5)
             self.root.attributes("-fullscreen", False)
             self.canvas.pack(fill=tk.BOTH, expand=True)
 
