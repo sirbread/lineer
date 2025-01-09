@@ -5,7 +5,7 @@ import math
 class CurveApp:
     def __init__(self, root):
         self.root = root
-        self.root.title("Car Guide")
+        self.root.title("lineer")
         self.root.geometry("1400x500")
         self.canvas = tk.Canvas(root, bg="white")
         self.canvas.pack(fill=tk.BOTH, expand=True)
@@ -27,7 +27,7 @@ class CurveApp:
         self.slider_tiling = tk.Scale(root, from_=0, to=-400, resolution=1, orient=tk.HORIZONTAL, label="Tiling Factor", command=self.update_curve)
         self.slider_tiling.pack(side=tk.RIGHT, fill=tk.Y)
 
-        self.slider_yellow_threshold = tk.Scale(root, from_=0.7, to=1.5, resolution=0.01, orient=tk.HORIZONTAL, label="Middle Color Threshold", command=self.update_curve)
+        self.slider_yellow_threshold = tk.Scale(root, from_=0.7, to=1.5, resolution=0.01, orient=tk.HORIZONTAL, label="Mid Col Peak", command=self.update_curve)
         self.slider_yellow_threshold.pack(side=tk.RIGHT, fill=tk.Y)
 
         self.slider_scroll_distance = tk.Scale(root, from_=0.01, to=0.2, resolution=0.01, orient=tk.HORIZONTAL, label="Dis. per Scroll", command=self.update_scroll_distance)
@@ -42,10 +42,10 @@ class CurveApp:
         self.scroll_step_size = 0.1  
         self.canvas.bind("<Configure>", lambda event: self.draw_curve())
 
-        self.fullscreen_button = tk.Button(root, text="Fullscreen", command=self.toggle_fullscreen)
+        self.fullscreen_button = tk.Button(root, text="fullscreen :o", command=self.toggle_fullscreen)
         self.fullscreen_button.pack(side=tk.TOP, padx=10, pady=5)
 
-        self.color_prefs_button = tk.Button(root, text="Color Preferences", command=self.open_color_preferences)
+        self.color_prefs_button = tk.Button(root, text="color preferences :D", command=self.open_color_preferences)
         self.color_prefs_button.pack(side=tk.TOP, padx=10, pady=5)
 
         self.canvas.bind("<MouseWheel>", self.on_scroll)
@@ -203,9 +203,9 @@ class CurveApp:
             self.slider_tiling.pack(side=tk.RIGHT, fill=tk.Y)
             self.slider_yellow_threshold.pack(side=tk.RIGHT, fill=tk.Y)
             self.slider_scroll_distance.pack(side=tk.RIGHT, fill=tk.Y)
-            self.fullscreen_button = tk.Button(root, text="Fullscreen", command=self.toggle_fullscreen)
+            self.fullscreen_button = tk.Button(root, text="fullscreen :o", command=self.toggle_fullscreen)
             self.fullscreen_button.pack(side=tk.TOP, padx=10, pady=5)
-            self.color_prefs_button = tk.Button(root, text="Color Preferences", command=self.open_color_preferences)
+            self.color_prefs_button = tk.Button(root, text="color preferences :D", command=self.open_color_preferences)
             self.color_prefs_button.pack(side=tk.TOP, padx=10, pady=5)
             self.root.attributes("-fullscreen", False)
             self.canvas.pack(fill=tk.BOTH, expand=True)
