@@ -1,5 +1,5 @@
 # lineer - car hud steering guidance system
-
+check out the demo [here](https://www.youtube.com/watch?v=UqEKbWCKcXU)!
 lineer is a car hud (heads-up display) guidance system that helps drivers navigate with a dynamic  line on their vehicle's hud. <br>
 it uses a combination of graphical elements and interactive sliders to adjust how the guidance lines appear based on the steering wheel’s input.<br> 
 when the steering wheel turns, a scroll wheel on a mouse turns (which you have to mount), which bends the lines on the hud to provide real-time visual guidance.
